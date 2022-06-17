@@ -25,8 +25,9 @@ def main():
 
     args = parser.parse_args()
 
-    train_dataset, valid_dataset = util.load_train_dataset('data/train_gold.csv')
-    train_loader = DataLoader(train_dataset, batch_size=args.bs)
+    train_dataset, valid_dataset = util.load_train_valid_dataset('data/train_gold.csv')
+    train_loader = DataLoader(train_dataset, batch_size=int(args.bs))
+    valid_loader = DataLoader(valid_dataset, batch_size=int(args.bs))
 
     test_dataset = util.load_test_dataset('data/test_gold.csv')
     test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
@@ -41,8 +42,8 @@ def main():
 
 
 def train(model, tokenizer, train_loader, valid_loader, args):
-    lr = args.lr
-    num_epochs = args.epochs
+    lr = float(args.lr)
+    num_epochs = int(args.epochs)
 
     num_batches = len(train_loader)
 
