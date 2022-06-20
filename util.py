@@ -83,7 +83,7 @@ def load_test_valid_dataset(file_path='test_gold.csv'):
 
 
 def load_test_valid_df(file_path):
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(file_path, usecols=['nc','paraphrases'])
 
     for i, row in df.iterrows():
         string_literal = df.at[i, 'paraphrases']
