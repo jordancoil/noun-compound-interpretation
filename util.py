@@ -40,3 +40,27 @@ def load_test_dataset(file_path='test_gold.csv'):
     test_dataset = Dataset.from_pandas(test_df)
 
     return test_dataset
+
+
+def load_test_valid_dataset(file_path='test_gold.csv'):
+    test_df_raw = pd.read_csv(file_path)
+    test_dict = {}
+
+    for index, row in test_df_raw.iterrows():
+        nc = row['w1'] + " " + row['w2']
+        if nc in test_dict.keys():
+            test_dict[nc].append(row['paraphrase'])
+        else:
+            test_dict[nc] = [row['paraphrase']]
+
+    test_dict_for_df = {'nc': [], 'paraphrases': []}
+    for noun_compound, paras in test_dict.items():
+        test_dict_for_df['nc'].append(noun_compound)
+        test_dict_for_df['paraphrases'].append(paras)
+
+    test_df = pd.DataFrame.from_dict(test_dict_for_df)
+    test_df, valid_df = train_test_split(test_df, test_size=0.2)
+    test_dataset = Dataset.from_pandas(test_df)
+    valid_dataset = Dataset.from_pandas(valid_df)
+
+    return test_dataset, valid_dataset

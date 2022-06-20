@@ -8,8 +8,6 @@ from transformers import Adafactor, AutoTokenizer, AutoModelForSeq2SeqLM
 import semeval_scorer
 import util
 
-device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-print("Using device: ", device)
 
 
 def main():
@@ -29,25 +27,33 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=int(args.bs))
     valid_loader = DataLoader(valid_dataset, batch_size=int(args.bs))
 
-    test_dataset = util.load_test_dataset('data/test_gold.csv')
-    test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
+    # test_dataset = util.load_test_dataset('data/test_gold.csv')
+    # test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
+    test_valid_dataset = util.load_test_dataset('data/valid_ds.csv')
+    test_valid_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
 
     if args.architechture.startswith('t5'):
         model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
         tokenizer = AutoTokenizer.from_pretrained(args.architechture)
 
         train(model, tokenizer, train_loader, valid_loader, args)
+	test(model, tokenizer, test_valid_loader)
     else:
         print("unsupported model")
 
 
 def train(model, tokenizer, train_loader, valid_loader, args):
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print("Using device: ", device)
+    
     lr = float(args.lr)
     num_epochs = int(args.epochs)
 
     num_batches = len(train_loader)
 
     optim = Adafactor(model.parameters(), lr=lr, relative_step=False)
+
+    model.to(device)
 
     for epoch in range(num_epochs):
         model.train()
@@ -110,6 +116,8 @@ def test(model, tokenizer, test_loader):
 
             ncs = batch['nc']
             gold_paraphrases = batch['paraphrases']
+            # change from tuples to just strings
+            gold_paraphrases = list(map(lambda x: x[0], gold_paraphrases)
 
             tokenized_ncs = tokenizer(ncs, padding=True, truncation=True, return_tensors='pt')
 
