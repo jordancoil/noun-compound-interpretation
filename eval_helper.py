@@ -50,3 +50,12 @@ def score_single_paraphrase(paraphrase, ref_paraphrases, scorer):
             best_match = ref_paraphrase
 
     return best_match, best_score
+
+
+def batch_meteor(gen_paraphrases, ref_paraphrases):
+    for gen_para in gen_paraphrases:
+        for ref_para in ref_paraphrases:
+            meteor.add_batch(predictions=[gen_para], references=[ref_para])
+
+    avg_score = meteor.compute()
+    return avg_score['meteor']

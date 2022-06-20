@@ -135,7 +135,7 @@ def test(model, tokenizer, test_loader, device):
                 gen_paras.append(tokenizer.decode(output, skip_special_tokens=True))
 
             # TODO: add other scoring metrics
-            nc_average_score = eval_helper.score_paraphrases_average(gen_paras, gold_paraphrases, eval_helper.meteor_scorer)
+            nc_average_score = eval_helper.batch_meteor(gen_paras, gold_paraphrases)
             total_score += nc_average_score
 
         average_score = total_score / len(test_loader)
