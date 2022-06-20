@@ -34,8 +34,6 @@ def score_paraphrases_average(paraphrases, ref_paraphrases, scorer):
         total_score += best_score
 
     average_score = total_score / len(paraphrases)
-    print('avg score:', average_score, ' -- ', paraphrases[0])
-
     return average_score
 
 

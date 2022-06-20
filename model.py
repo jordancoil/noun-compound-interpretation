@@ -120,10 +120,8 @@ def test(model, tokenizer, test_loader, device):
 
             ncs = batch['nc']
             gold_paraphrases = batch['paraphrases']
-            print(gold_paraphrases)
             # change from tuples to just strings
             gold_paraphrases = list(map(lambda x: x[0], gold_paraphrases))
-            print(gold_paraphrases)
 
             tokenized_ncs = tokenizer(ncs, padding=True, truncation=True, return_tensors='pt')
 
@@ -134,7 +132,6 @@ def test(model, tokenizer, test_loader, device):
 
             for i in range(num_paras):
                 output = generate_top_p(input_ids, model, 0.92)
-                print('generated para: ', tokenizer.decode(output, skip_special_tokens=True))
                 gen_paras.append(tokenizer.decode(output, skip_special_tokens=True))
 
             # TODO: add other scoring metrics
