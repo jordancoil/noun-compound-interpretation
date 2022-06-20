@@ -3,6 +3,8 @@ import argparse
 import torch
 from torch.utils.data import DataLoader
 
+from datasets import Dataset
+
 from transformers import Adafactor, AutoTokenizer, AutoModelForSeq2SeqLM
 
 import semeval_scorer
@@ -32,7 +34,8 @@ def main():
 
     # test_dataset = util.load_test_dataset('data/test_gold.csv')
     # test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
-    test_valid_dataset = util.load_valid_dataset('data/valid_ds.csv')
+    test_valid_df = util.load_test_valid_df('data/valid_df.csv')
+    test_valid_dataset = Dataset.from_pandas(test_valid_df)
     test_valid_loader = DataLoader(test_valid_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
 
     if args.architechture.startswith('t5'):
