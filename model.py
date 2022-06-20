@@ -7,7 +7,7 @@ from transformers import Adafactor, AutoTokenizer, AutoModelForSeq2SeqLM
 
 import semeval_scorer
 import util
-
+import eval_helper
 
 
 def main():
@@ -23,28 +23,29 @@ def main():
 
     args = parser.parse_args()
 
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print("Using device: ", device)
+
     train_dataset, valid_dataset = util.load_train_valid_dataset('data/train_gold.csv')
     train_loader = DataLoader(train_dataset, batch_size=int(args.bs))
     valid_loader = DataLoader(valid_dataset, batch_size=int(args.bs))
 
     # test_dataset = util.load_test_dataset('data/test_gold.csv')
     # test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
-    test_valid_dataset = util.load_test_dataset('data/valid_ds.csv')
-    test_valid_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
+    test_valid_dataset = util.load_valid_dataset('data/valid_ds.csv')
+    test_valid_loader = DataLoader(test_valid_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
 
     if args.architechture.startswith('t5'):
         model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
         tokenizer = AutoTokenizer.from_pretrained(args.architechture)
 
-        train(model, tokenizer, train_loader, valid_loader, args)
-        test(model, tokenizer, test_valid_loader)
+        train(model, tokenizer, train_loader, valid_loader, device, args)
+        test(model, tokenizer, test_valid_loader, device)
     else:
         print("unsupported model")
 
 
-def train(model, tokenizer, train_loader, valid_loader, args):
-    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    print("Using device: ", device)
+def train(model, tokenizer, train_loader, valid_loader, device, args):
     
     lr = float(args.lr)
     num_epochs = int(args.epochs)
@@ -104,7 +105,7 @@ def train(model, tokenizer, train_loader, valid_loader, args):
         print("epoch: " + str(epoch + 1) + ", train loss: " + str(epoch_loss)+ ", valid loss: " + str(valid_loss))
 
 
-def test(model, tokenizer, test_loader):
+def test(model, tokenizer, test_loader, device):
     model.eval()
     with torch.no_grad():
         total_score = 0
@@ -117,7 +118,7 @@ def test(model, tokenizer, test_loader):
             ncs = batch['nc']
             gold_paraphrases = batch['paraphrases']
             # change from tuples to just strings
-            gold_paraphrases = list(map(lambda x: x[0], gold_paraphrases)
+            gold_paraphrases = list(map(lambda x: x[0], gold_paraphrases))
 
             tokenized_ncs = tokenizer(ncs, padding=True, truncation=True, return_tensors='pt')
 
@@ -131,7 +132,7 @@ def test(model, tokenizer, test_loader):
                 gen_paras.append(tokenizer.decode(output, skip_special_tokens=True))
 
             # TODO: add other scoring metrics
-            nc_average_score = util.score_paraphrases_average(gen_paras, gold_paraphrases, util.meteor_scorer)
+            nc_average_score = eval_helper.score_paraphrases_average(gen_paras, gold_paraphrases, eval_helper.meteor_scorer)
             total_score += nc_average_score
 
         average_score = total_score / len(test_loader)

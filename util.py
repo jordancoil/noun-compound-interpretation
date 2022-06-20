@@ -42,6 +42,20 @@ def load_test_dataset(file_path='test_gold.csv'):
     return test_dataset
 
 
+def load_valid_dataset(file_path='valid_ds.csv'):
+    valid_df_raw = pd.read_csv(file_path)
+    dict_for_df = {'nc': [], 'paraphrases': []}
+
+    for index, row in valid_df_raw.iterrows():
+        dict_for_df['nc'].append(row['nc'])
+        dict_for_df['paraphrases'].append(row['paraphrases'])
+
+    df = pd.DataFrame.from_dict(dict_for_df)
+    dataset = Dataset.from_pandas(df)
+
+    return dataset
+
+
 def load_test_valid_dataset(file_path='test_gold.csv'):
     test_df_raw = pd.read_csv(file_path)
     test_dict = {}
