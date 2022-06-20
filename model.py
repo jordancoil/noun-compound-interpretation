@@ -37,7 +37,7 @@ def main():
         tokenizer = AutoTokenizer.from_pretrained(args.architechture)
 
         train(model, tokenizer, train_loader, valid_loader, args)
-	test(model, tokenizer, test_valid_loader)
+        test(model, tokenizer, test_valid_loader)
     else:
         print("unsupported model")
 
