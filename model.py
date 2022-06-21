@@ -43,7 +43,7 @@ def main():
     if args.architechture.startswith('t5'):
         if args.load:
             model = AutoModelForSeq2SeqLM.from_pretrained("./" + args.architechture)
-            tokenizer = AutoTokenizer.from_pretrained(args.architechture)
+            tokenizer = AutoTokenizer.from_pretrained("./" + args.architechture)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
             tokenizer = AutoTokenizer.from_pretrained(args.architechture)
