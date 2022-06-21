@@ -45,12 +45,12 @@ def main():
             model = AutoModelForSeq2SeqLM.load_pretrained("./" + args.architechture)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
-            
+
         tokenizer = AutoTokenizer.from_pretrained(args.architechture)
 
         train(model, tokenizer, train_loader, valid_loader, device, args)
 
-        model.save_pretrained(os.getcwd())
+        model.save_pretrained(os.getcwd() + '/' + args.architechture)
 
         test(model, tokenizer, test_valid_loader, device)
     else:
