@@ -43,9 +43,11 @@ def main():
     if args.architechture.startswith('t5'):
         if args.load:
             model = AutoModelForSeq2SeqLM.from_pretrained("./model_" + args.architechture)
+            model.to(device)
             tokenizer = AutoTokenizer.from_pretrained(args.architechture)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
+            model.to(device)
             tokenizer = AutoTokenizer.from_pretrained(args.architechture)
             train(model, tokenizer, train_loader, valid_loader, device, args)
             model.save_pretrained(os.getcwd() + '/model_' + args.architechture)
@@ -63,8 +65,6 @@ def train(model, tokenizer, train_loader, valid_loader, device, args):
     num_batches = len(train_loader)
 
     optim = Adafactor(model.parameters(), lr=lr, relative_step=False)
-
-    model.to(device)
 
     for epoch in range(num_epochs):
         model.train()
