@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import torch
 from torch.utils.data import DataLoader
@@ -22,6 +23,7 @@ def main():
                         help='batch size')
     parser.add_argument('--epochs', default=10,
                         help='number of epochs')
+    parser.add_argument('--load', action=argparse.BooleanOptionalAction)
 
     args = parser.parse_args()
 
@@ -39,10 +41,17 @@ def main():
     test_valid_loader = DataLoader(test_valid_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
 
     if args.architechture.startswith('t5'):
-        model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
+        if args.load:
+            model = AutoModelForSeq2SeqLM.load_pretrained("./" + args.architechture)
+        else:
+            model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
+            
         tokenizer = AutoTokenizer.from_pretrained(args.architechture)
 
         train(model, tokenizer, train_loader, valid_loader, device, args)
+
+        model.save_pretrained(os.getcwd())
+
         test(model, tokenizer, test_valid_loader, device)
     else:
         print("unsupported model")
