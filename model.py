@@ -42,14 +42,13 @@ def main():
 
     if args.architechture.startswith('t5'):
         if args.load:
-            model = AutoModelForSeq2SeqLM.from_pretrained("./" + args.architechture)
-            tokenizer = AutoTokenizer.from_pretrained("./" + args.architechture + "/")
+            model = AutoModelForSeq2SeqLM.from_pretrained("./model_" + args.architechture)
+            tokenizer = AutoTokenizer.from_pretrained(args.architechture)
         else:
             model = AutoModelForSeq2SeqLM.from_pretrained(args.architechture)
             tokenizer = AutoTokenizer.from_pretrained(args.architechture)
             train(model, tokenizer, train_loader, valid_loader, device, args)
-            model.save_pretrained(os.getcwd() + '/' + args.architechture)
-            tokenizer.save_pretrained(os.getcwd() + '/' + args.architechture)
+            model.save_pretrained(os.getcwd() + '/model_' + args.architechture)
 
         test(model, tokenizer, test_valid_loader, device)
     else:
