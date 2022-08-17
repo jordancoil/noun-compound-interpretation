@@ -34,8 +34,6 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=int(args.bs))
     valid_loader = DataLoader(valid_dataset, batch_size=int(args.bs))
 
-    # test_dataset = util.load_test_dataset('data/test_gold.csv')
-    # test_loader = DataLoader(test_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
     test_valid_df = util.load_test_valid_df('data/valid_df.csv')
     test_valid_dataset = Dataset.from_pandas(test_valid_df)
     test_valid_loader = DataLoader(test_valid_dataset, batch_size=1)  # TODO: figure out how to change this from bs=1
